@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import { FileText, Building2, Plus, Settings, MessageSquare, Search, ChevronRight } from 'lucide-react'
 import {
   Sidebar,
@@ -38,7 +38,33 @@ const companies = [
   { id: 8, name: "Spotify AB", industry: "Music Streaming", status: "active" },
 ]
 
+// Mock data for conversations
+const conversations = [
+  "Drug interaction analysis for elderly patients",
+  "Clinical trial data interpretation",
+  "Pharmaceutical regulatory compliance review",
+  "Healthcare cost reduction strategies",
+  "Medical device safety protocols",
+  "Patient data privacy regulations",
+  "Biomarker research methodology",
+  "Telemedicine implementation best practices"
+]
+
 export function ChatSidebar() {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Filter conversations based on search query (partial word matching)
+  const filteredConversations = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return conversations
+    }
+    
+    const query = searchQuery.toLowerCase().trim()
+    return conversations.filter(conversation => 
+      conversation.toLowerCase().includes(query)
+    )
+  }, [searchQuery])
+
   return (
     <Sidebar className="w-64">
       <SidebarHeader className="p-4 border-b">
@@ -51,6 +77,8 @@ export function ChatSidebar() {
           <Input 
             placeholder="Search conversations..." 
             className="pl-10 h-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </SidebarHeader>
@@ -63,23 +91,20 @@ export function ChatSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {[
-                "Drug interaction analysis for elderly patients",
-                "Clinical trial data interpretation",
-                "Pharmaceutical regulatory compliance review",
-                "Healthcare cost reduction strategies",
-                "Medical device safety protocols",
-                "Patient data privacy regulations",
-                "Biomarker research methodology",
-                "Telemedicine implementation best practices"
-              ].map((conversation, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton className="w-full justify-start px-4 py-2 h-auto">
-                    <MessageSquare className="h-4 w-4 shrink-0" />
-                    <span className="truncate text-sm">{conversation}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {filteredConversations.length > 0 ? (
+                filteredConversations.map((conversation, index) => (
+                  <SidebarMenuItem key={index}>
+                    <SidebarMenuButton className="w-full justify-start px-4 py-2 h-auto">
+                      <MessageSquare className="h-4 w-4 shrink-0" />
+                      <span className="truncate text-sm">{conversation}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-sm text-muted-foreground">
+                  No conversations found
+                </div>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
