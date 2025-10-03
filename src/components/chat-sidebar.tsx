@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { FileText, Building2, Plus, Settings, MessageSquare, Search, ChevronRight, Upload, X } from 'lucide-react'
+import { FileText, Building2, Plus, Settings, MessageSquare, Search, ChevronRight } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -15,14 +15,6 @@ import {
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Separator } from "./ui/separator"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "./ui/dialog"
 
 // Mock data for PDFs
 const pdfFiles = [
@@ -60,42 +52,20 @@ const conversations = [
 
 export function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
 
   // Filter conversations based on search query (partial word matching)
   const filteredConversations = useMemo(() => {
     if (!searchQuery.trim()) {
       return conversations
     }
-    
+
     const query = searchQuery.toLowerCase().trim()
-    return conversations.filter(conversation => 
+    return conversations.filter(conversation =>
       conversation.toLowerCase().includes(query)
     )
   }, [searchQuery])
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (files) {
-      setSelectedFiles(Array.from(files))
-    }
-  }
-
-  const handleUpload = () => {
-    // TODO: Implement actual file upload logic
-    console.log('Uploading files:', selectedFiles)
-    // Reset and close dialog
-    setSelectedFiles([])
-    setIsUploadDialogOpen(false)
-  }
-
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index))
-  }
-
   return (
-    <>
     <Sidebar className="w-64">
       <SidebarHeader className="p-4 border-b">
         <Button className="w-full justify-start gap-2 h-10">
@@ -143,19 +113,9 @@ export function ChatSidebar() {
 
         {/* PDF Files Section */}
         <SidebarGroup>
-          <div className="flex items-center justify-between px-4 py-2">
-            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-              PDF Documents
-            </SidebarGroupLabel>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-6 w-6 p-0 hover:bg-muted"
-              onClick={() => setIsUploadDialogOpen(true)}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          </div>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
+            PDF Documents
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {pdfFiles.map((file) => (
@@ -209,96 +169,5 @@ export function ChatSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-    
-    {/* Upload Document Dialog - Rendered outside Sidebar to avoid z-index issues */}
-    <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Upload Documents</DialogTitle>
-            <DialogDescription>
-              Add PDF documents to your collection. You can select multiple files.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            {/* File Upload Area */}
-            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors">
-              <input
-                type="file"
-                id="file-upload"
-                className="hidden"
-                accept=".pdf,.doc,.docx,.txt"
-                multiple
-                onChange={handleFileSelect}
-              />
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer flex flex-col items-center gap-2"
-              >
-                <Upload className="h-10 w-10 text-muted-foreground" />
-                <div className="text-sm">
-                  <span className="font-semibold text-primary">Click to upload</span>
-                  <span className="text-muted-foreground"> or drag and drop</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  PDF, DOC, DOCX, or TXT (max 10MB)
-                </p>
-              </label>
-            </div>
-
-            {/* Selected Files List */}
-            {selectedFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Selected Files:</p>
-                <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                  {selectedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-muted rounded-md"
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <FileText className="h-4 w-4 shrink-0 text-red-500" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm truncate">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {(file.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 shrink-0"
-                        onClick={() => removeFile(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSelectedFiles([])
-                setIsUploadDialogOpen(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleUpload}
-              disabled={selectedFiles.length === 0}
-            >
-              Upload {selectedFiles.length > 0 && `(${selectedFiles.length})`}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
   )
 }
