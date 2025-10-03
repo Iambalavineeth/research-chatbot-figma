@@ -95,6 +95,7 @@ export function ChatSidebar() {
   }
 
   return (
+    <>
     <Sidebar className="w-64">
       <SidebarHeader className="p-4 border-b">
         <Button className="w-full justify-start gap-2 h-10">
@@ -207,9 +208,10 @@ export function ChatSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
-      {/* Upload Document Dialog */}
-      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+    </Sidebar>
+    
+    {/* Upload Document Dialog - Rendered outside Sidebar to avoid z-index issues */}
+    <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Upload Documents</DialogTitle>
@@ -297,6 +299,6 @@ export function ChatSidebar() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Sidebar>
+    </>
   )
 }
