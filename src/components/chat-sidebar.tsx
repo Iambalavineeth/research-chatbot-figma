@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FileText, Building2, Plus, Settings, MessageSquare, Search, ChevronRight } from 'lucide-react'
 import {
   Sidebar,
@@ -52,6 +53,7 @@ const conversations = [
 
 export function ChatSidebar() {
   const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate()
 
   // Filter conversations based on search query (partial word matching)
   const filteredConversations = useMemo(() => {
@@ -86,7 +88,7 @@ export function ChatSidebar() {
       <SidebarContent className="overflow-y-auto">
         {/* Recent Conversations */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
+          <SidebarGroupLabel className="text-sm uppercase tracking-wider text-muted-foreground font-semibold px-4 py-2">
             Recent Conversations
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -113,9 +115,19 @@ export function ChatSidebar() {
 
         {/* PDF Files Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
-            PDF Documents
-          </SidebarGroupLabel>
+          <div className="flex items-center justify-between pl-4 pr-1 py-2 gap-1">
+            <SidebarGroupLabel className="text-sm uppercase tracking-wider text-muted-foreground font-semibold truncate">
+              PDF Documents
+            </SidebarGroupLabel>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-5 px-2 text-[9px] text-muted-foreground hover:bg-accent hover:text-foreground whitespace-nowrap flex-shrink-0 border"
+              onClick={() => navigate('/organize')}
+            >
+              Add/Edit
+            </Button>
+          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {pdfFiles.map((file) => (
@@ -137,7 +149,7 @@ export function ChatSidebar() {
 
         {/* Companies Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2">
+          <SidebarGroupLabel className="text-sm uppercase tracking-wider text-muted-foreground font-semibold px-4 py-2">
             Companies
           </SidebarGroupLabel>
           <SidebarGroupContent>
